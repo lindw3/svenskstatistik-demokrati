@@ -28,17 +28,6 @@ valresultat_sverige <- read_excel("data/valresultat_sverige.xlsx",
                                                        "numeric", "numeric", "numeric", 
                                                        "numeric"))
 
-
-
-
-
-
-
-
-
-
-
-
 # Temat
 ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,
                   plot.caption = element_text(hjust = 0) ,

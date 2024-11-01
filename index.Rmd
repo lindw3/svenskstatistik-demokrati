@@ -4,6 +4,8 @@ author: "av William Lind"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
+    navbar:
+      - { title: "Till startsidan", href: "https://lindw3.github.io/svenskstatistik/", align: right }
     vertical_layout: fill
     theme: journal
     css: styles.css

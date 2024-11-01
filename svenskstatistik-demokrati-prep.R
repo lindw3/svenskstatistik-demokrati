@@ -59,5 +59,3 @@ partifärger <- scale_colour_manual(values = c("Centerpartiet" = "#009933" ,
                                               "Sverigedemokraterna" = "#DDDD00" ,
                                               "Vänsterpartiet" = "#DA291C" ,
                                               "Övriga partier" = "grey"))
-
-

@@ -35,6 +35,8 @@ library(forecast)
 library(GGally)
 library(cluster)
 library(sf)
+library(ggrepel)
+library(ggtext)
 
 # Data: Valresultat i Sverige
 library(readxl)
@@ -43,7 +45,15 @@ valresultat_sverige <- read_excel("data/valresultat_sverige.xlsx",
                                                        "numeric", "numeric", "numeric", 
                                                        "numeric", "numeric", "numeric", 
                                                        "numeric"))
-# Temat
+# Data: Valresultat i EU-val
+valresultat_eu <- read_excel("data/valresultat_eu.xlsx", 
+     col_types = c("text", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric"))
+
+# Teman
 ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,
                   plot.caption = element_text(hjust = 0) ,
                   panel.background = element_rect(fill = "white"),
@@ -72,6 +82,7 @@ partifärger <- scale_colour_manual(values = c("Centerpartiet" = "#009933" ,
                                               "Socialdemokraterna" = "#E8112d" , 
                                               "Sverigedemokraterna" = "#DDDD00" ,
                                               "Vänsterpartiet" = "#DA291C" ,
+                                              "Junilistan" = "#ff8c00" ,
                                               "Övriga partier" = "grey"))
 ```
 
@@ -87,29 +98,49 @@ I denna rapport bemöts området **Demokrati** utifrån dessa områden:
 * B <br>
 * C
 
-# Valresultat {data-navmenu="Val"}
-##
+# Valresultat {data-navmenu="Val" data-orientation="rows"}
+##  {.tabset .tabset-pills}
 ### Valresultat i Sverige
 ```{r}
-df <- valresultat_sverige %>% 
-  pivot_longer(!År, names_to = "Parti" , values_to = "Röster")
+df <- valresultat_sverige %>%
+  pivot_longer(!År, names_to = "Parti", values_to = "Röster")
 
-df %>% 
+df %>%
   ggplot(aes(x = År, y = Röster, group = Parti, colour = Parti,
              text = paste("År: ", År, "\n", Parti, "\nRöster: ", Röster, "%"))) +
-  geom_line(linewidth = 1.5) +
-  scale_y_continuous(labels = percent_format(scale = 1) , breaks = seq(0 , 50 , 5) , limits = c(0 ,50)) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 50, 5), limits = c(0, 50)) +
   ss_theme +
   partifärger -> p_valresultat_sverige
 
-ggplotly(p_valresultat_sverige , tooltip = "text") %>% config(displayModeBar = F)
+ggplotly(p_valresultat_sverige, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle"))
 ```
 
 
 ### Valresultat i kommunval
 
 
+
 ### Valresultat i Europaval
+```{r}
+df <- valresultat_eu %>%
+  pivot_longer(!År, names_to = "Parti", values_to = "Röster")
+
+df %>%
+  ggplot(aes(x = År, y = Röster, group = Parti, colour = Parti,
+             text = paste("År: ", År, "\n", Parti, "\nRöster: ", Röster, "%"))) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 30, 5), limits = c(0, 30)) +
+  ss_theme +
+  partifärger -> p_valresultat_eu
+
+ggplotly(p_valresultat_eu, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+```
+
 
 
 # Partisympati efter kön {data-navmenu="Partisympatier"}

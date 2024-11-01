@@ -47,4 +47,25 @@ I denna rapport bemöts området **Demokrati** utifrån dessa områden:
 * B <br>
 * C
 
+# Valresultat i Sverige {data-navmenu="Val"}
+##
+### 
+```{r}
+df <- valresultat_sverige %>% 
+  pivot_longer(!År, names_to = "Parti" , values_to = "Röster")
+
+df %>% 
+  ggplot(aes(x = År, y = Röster, group = Parti, colour = Parti,
+             text = paste("År: ", År, "\n", Parti, "\nRöster (%): ", Röster, "%"))) +
+  geom_line(linewidth = 1.5) +
+  scale_y_continuous(labels = percent_format(scale = 1) , breaks = seq(0 , 50 , 5) , limits = c(0 ,50)) +
+  ss_theme +
+  partifärger -> p_valresultat_sverige
+
+ggplotly(p_valresultat_sverige , tooltip = "text") %>% config(displayModeBar = F)
+
+```
+
+
+
 

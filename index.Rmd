@@ -138,9 +138,9 @@ partifärger <- scale_colour_manual(values = c("Centerpartiet" = "#009933" ,
 ### Om rapporten 
 I denna rapport bemöts området **Demokrati** utifrån dessa områden:
 <br><br>
-* **Val**: Valdeltagande och valresultat över tid. <br>
-* **Partisympatier**: Partisympatier utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund. <br>
-* **Förtroendevalda**: Förtroendevalda utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund.
+- **Val**: Valdeltagande och valresultat över tid. <br>
+- **Partisympatier**: Partisympatier utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund. <br>
+- **Förtroendevalda**: Förtroendevalda utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund.
 <br> <br>
 Använd navigationspanelen högst upp för att se svaren utifrån olika områden. *Får figurerna inte plats på sidan? Testa att zooma ut genom att hålla in `Ctrl` + `-`.*
 

@@ -120,6 +120,7 @@ ggplotly(p_valresultat_sverige, tooltip = "text") %>%
 
 
 ### Valresultat i kommunval
+KARTA ÖVER RÖD/BLÅ FÖR VARJE KOMMUN FÖR 2022
 
 
 
@@ -141,11 +142,94 @@ ggplotly(p_valresultat_eu, tooltip = "text") %>%
   layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
 ```
 
+### Valdeltagande
+ANDEL SOM RÖSTADE FRÅN 1973-2022
+
+
+
 
 
 # Partisympati efter kön {data-navmenu="Partisympatier"}
-##
-###
+## {.tabset .tabset-pills}
+
+### Partisympatier efter kön
+SENASTE VALET, STAPELDIAGRAM DODGE, MÄN + KVINNOR
+
+### Vänster/högersympatier efter kön
+TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
+EN LINJE FÖR MÄN OCH EN FÖR KVINNOR
+EV. EN LINJE PER ÅLDERSGRUPP + TVÅ TJOCKARE LINJER FÖR MÄN RESPEKTIVE KVINNOR SOM HELHET
+
+
+
+# Partisympatier efter ålder {data-navmenu="Partisympatier"}
+## {.tabset .tabset-pills}
+
+### Partisympatier efter ålderskategorier
+SENASTE VALET, STAPELDIAGRAM DODGE, ÅLDERSKATEGORIERNA
+
+### Vänster/högersympatier efter ålder, tidslinje
+TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
+EN LINJE PER ÅLDERSKATEGORI
+
+### Vänster/högersympatier efter ålder och kön
+SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR ÅLDERSKATEGORI + KÖN. WAFFLE CHART?
+
+
+
+
+# Partisympatier efter utbildning {data-navmenu="Partisympatier"}
+## {.tabset .tabset-pills}
+
+### Partisympatier efter utbildningsbakgrund
+SENASTE VALET, STAPELDIAGRAM DODGE, UTBILDNINGSBAKGRUND
+
+### Vänster/högersympatier efter utbildningsbakgrund, tidslinje
+TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
+EN LINJE PER KATEGORI
+
+
+### Vänster/högersympatier efter utbildningsbakgrund och kön
+SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
+
+
+
+
+
+# Partisympatier efter inkomst {data-navmenu="Partisympatier"}
+## {.tabset .tabset-pills}
+
+### Partisympatier efter inkomstpercentil
+SENASTE VALET, STAPELDIAGRAM DODGE, INKOMSTPERCENTIL
+
+### Vänster/högersympatier efter inkomstpercentil, tidslinje
+TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
+EN LINJE PER KATEGORI
+
+
+### Vänster/högersympatier efter inkomstpercentil och kön
+SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
+
+
+
+
+
+# Partisympatier efter bakgrund {data-navmenu="Partisympatier"}
+## {.tabset .tabset-pills}
+
+### Partisympatier utifrån 
+SENASTE VALET, STAPELDIAGRAM DODGE, SVENSK/UTLÄNDSK BAKGRUND
+
+### Vänster/högersympatier efter inkomstpercentil, tidslinje
+TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
+EN LINJE PER KATEGORI
+
+
+### Vänster/högersympatier efter inkomstpercentil och kön
+SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
+
+
+
 
 
 # Förtroendevalda efter kön {data-navmenu="Förtroendevalda"}

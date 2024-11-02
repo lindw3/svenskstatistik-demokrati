@@ -38,14 +38,28 @@ library(sf)
 library(ggrepel)
 library(ggtext)
 
-# Data: Valresultat i Sverige
+# Karta
+data <- st_read("C:\\Users\\WILIDF17\\OneDrive - Sveriges Riksidrottsförbund\\Dokument\\GitHub\\svenskstatistik-demokrati\\data\\RegSO_2018_v2.gpkg" , layer = "RegSO_2018_v2")
+kommuner_karta <- data %>%
+  select(regso, kommunnamn, geom)
+colnames(kommuner_karta) <- c("RegSO" , "Kommun" , "geom")
+rm(data)
+
+
+
+### Dataprep
+
+# Valdeltagande riksdagsval
 library(readxl)
+valdeltagande <- read_excel("data/valdeltagande.xlsx")
+
+# Valresultat i riksdagsval
 valresultat_sverige <- read_excel("data/valresultat_sverige.xlsx", 
                                          col_types = c("text", "numeric", "numeric", 
                                                        "numeric", "numeric", "numeric", 
                                                        "numeric", "numeric", "numeric", 
                                                        "numeric"))
-# Data: Valresultat i EU-val
+# Valresultat i EU-val
 valresultat_eu <- read_excel("data/valresultat_eu.xlsx", 
      col_types = c("text", "numeric", "numeric", 
          "numeric", "numeric", "numeric", 
@@ -53,7 +67,34 @@ valresultat_eu <- read_excel("data/valresultat_eu.xlsx",
          "numeric", "numeric", "numeric", 
          "numeric"))
 
-# Teman
+# Valresultat i kommunval
+valresultat_kommun <- read_excel("data/valresultat_kommun.xlsx", 
+     col_types = c("text", "text", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric"))
+valresultat_kommun <- valresultat_kommun %>% 
+  pivot_longer(!c(Kommun, Parti) , names_to = "År" , values_to = "Andel") %>%
+  filter(!(Parti %in% c("ogiltiga valsedlar" , "ej röstande"))) %>% 
+  mutate(Färg = ifelse(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna"), "Blå", "Röd")) %>% 
+  mutate(Kommun = substr(Kommun, 6, nchar(Kommun)))
+
+   # Dela upp i röd och blå för kartan
+df <- valresultat_kommun %>% 
+  filter(År == "2022") %>% 
+  group_by(Kommun , Färg) %>% 
+  reframe(Andel = sum(Andel)) %>% 
+  group_by(Kommun) %>%
+  filter(Andel != min(Andel)) %>%
+  ungroup()
+
+kommuner_karta <- kommuner_karta %>% 
+  left_join(df %>% select(Kommun, Färg , Andel), by = "Kommun")
+
+
+# Tema
 ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,
                   plot.caption = element_text(hjust = 0) ,
                   panel.background = element_rect(fill = "white"),
@@ -68,8 +109,9 @@ ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,
                   legend.text = element_text(color = "black" , family = "sans") ,
                   legend.title = element_text(color = "black" , family = "sans") , 
                   text = element_text(size=12, face="plain", color = "white" , family = "sans"),
-                  axis.title = element_text(color = "white" , family = "sans"),
-                  axis.text = element_text(color = "white" , family = "sans"))
+                  axis.title = element_text(color = "white" , family = "sans" , size = 18),
+                  axis.text = element_text(color = "white" , family = "sans") ,
+                  axis.text.x = element_text(size = 12))
 
 # Partifärger
 partifärger <- scale_colour_manual(values = c("Centerpartiet" = "#009933" ,
@@ -86,20 +128,57 @@ partifärger <- scale_colour_manual(values = c("Centerpartiet" = "#009933" ,
                                               "Övriga partier" = "grey"))
 ```
 
-# Översikt
+# Översikt {data-orientation="rows"}
 ##
 ### Om initiativet
 *Svensk statistik* är ett initiativ taget av William Lind med det huvudsakliga syftet att visualisera utvecklingen i Sverige utifrån ett antal parametrar. Genom SCB är Sverige ett land som ligger i framkant i att lagra registerdata och föra annan statistik på befolkningsnivå, men denna statistik är inte alltid så enkel att ta till sig. Detta är ett försök att förenkla möjligheten att ta till sig av denna data.
 <br><br>
 
+##
+### Om rapporten 
 I denna rapport bemöts området **Demokrati** utifrån dessa områden:
-<br>
-* A <br>
-* B <br>
-* C
+<br><br>
+* **Val**: Valdeltagande och valresultat över tid. <br>
+* **Partisympatier**: Partisympatier utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund. <br>
+* **Förtroendevalda**: Förtroendevalda utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund.
+<br> <br>
+Använd navigationspanelen högst upp för att se svaren utifrån olika områden. *Får figurerna inte plats på sidan? Testa att zooma ut genom att hålla in `Ctrl` + `-`.*
 
-# Valresultat {data-navmenu="Val" data-orientation="rows"}
-##  {.tabset .tabset-pills}
+
+##
+### Andra områden
+
+
+
+
+
+
+
+# Val {data-orientation="columns"}
+##  {.tabset .tabset-pills data-width="400"}
+### Valdeltagande
+```{r}
+df <- valdeltagande %>% 
+  pivot_longer(!Val, names_to = "År", values_to = "Andel")
+
+df %>%
+  ggplot(aes(x = År, y = Andel, group = Val, color = Val,
+             text = paste("År: ", År, "\nVal: " , Val , "\nAndel: ", Andel , "%"))) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 100, 25), limits = c(0, 100)) +
+  scale_x_discrete(breaks = c("1973" , "2022")) +
+  ss_theme +
+  scale_color_manual(values = c("Riksdag" = "#006AB3",
+                                "Region" = "#DA291C",
+                                "Kommun" =  "#009933"))   -> p_valdeltagande
+
+ggplotly(p_valdeltagande, tooltip = "text") %>%
+  config(displayModeBar = F)
+```
+
+
+##  {.tabset .tabset-pills data-width="600"}
+
 ### Valresultat i Sverige
 ```{r}
 df <- valresultat_sverige %>%
@@ -107,9 +186,10 @@ df <- valresultat_sverige %>%
 
 df %>%
   ggplot(aes(x = År, y = Röster, group = Parti, colour = Parti,
-             text = paste("År: ", År, "\n", Parti, "\nRöster: ", Röster, "%"))) +
+             text = paste("År: ", År, "\nParti: ", Parti, "\nRöster: ", Röster, "%"))) +
   geom_line(linewidth = 1) +
   scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 50, 5), limits = c(0, 50)) +
+  scale_x_discrete(breaks = c("1973" , "2022")) +
   ss_theme +
   partifärger -> p_valresultat_sverige
 
@@ -119,11 +199,6 @@ ggplotly(p_valresultat_sverige, tooltip = "text") %>%
 ```
 
 
-### Valresultat i kommunval
-KARTA ÖVER RÖD/BLÅ FÖR VARJE KOMMUN FÖR 2022
-
-
-
 ### Valresultat i Europaval
 ```{r}
 df <- valresultat_eu %>%
@@ -131,9 +206,10 @@ df <- valresultat_eu %>%
 
 df %>%
   ggplot(aes(x = År, y = Röster, group = Parti, colour = Parti,
-             text = paste("År: ", År, "\n", Parti, "\nRöster: ", Röster, "%"))) +
+             text = paste("År: ", År, "\nParti: ", Parti, "\nRöster: ", Röster, "%"))) +
   geom_line(linewidth = 1) +
   scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 30, 5), limits = c(0, 30)) +
+  scale_x_discrete(breaks = c("1995" , "2024")) +
   ss_theme +
   partifärger -> p_valresultat_eu
 
@@ -142,14 +218,38 @@ ggplotly(p_valresultat_eu, tooltip = "text") %>%
   layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
 ```
 
-### Valdeltagande
-ANDEL SOM RÖSTADE FRÅN 1973-2022
+
+### Valresultat i kommunval efter block
+```{r}
+kommuner_karta %>% 
+ggplot(aes(text = paste(Kommun , "\nPolitisk färg: " , Färg , "\nAndel: " , Andel))) +
+  geom_sf(aes(fill = Färg)) +
+  ss_theme +
+  scale_fill_manual(values = c("Blå" = "#006AB3" ,
+                               "Röd" = "#DA291C") , labels = c("Höger" , "Vänster")) +
+  labs(fill = "Partisympati efter block") +
+  theme(panel.grid.major = NULL,
+        panel.grid.minor = NULL, 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) -> p_kommunval
+
+p_kommunval
+```
 
 
 
 
 
-# Partisympati efter kön {data-navmenu="Partisympatier"}
+
+
+
+
+
+
+
+# Partisympatier efter kön {data-navmenu="Partisympatier"}
 ## {.tabset .tabset-pills}
 
 ### Partisympatier efter kön
@@ -178,6 +278,7 @@ SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR ÅLDERSKATEGORI + K�
 
 
 
+
 # Partisympatier efter utbildning {data-navmenu="Partisympatier"}
 ## {.tabset .tabset-pills}
 
@@ -191,6 +292,7 @@ EN LINJE PER KATEGORI
 
 ### Vänster/högersympatier efter utbildningsbakgrund och kön
 SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
+
 
 
 
@@ -214,6 +316,7 @@ SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖ
 
 
 
+
 # Partisympatier efter bakgrund {data-navmenu="Partisympatier"}
 ## {.tabset .tabset-pills}
 
@@ -227,6 +330,15 @@ EN LINJE PER KATEGORI
 
 ### Vänster/högersympatier efter inkomstpercentil och kön
 SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
+
+
+
+
+
+
+
+
+
 
 
 

@@ -147,7 +147,18 @@ Använd navigationspanelen högst upp för att se svaren utifrån olika områden
 
 ##
 ### Andra områden
+<style>
+  .big-button {
+    font-size: 30px;
+    padding: 20px 40px;
+  }
+</style>
 
+
+<div style="display: flex; gap: 15px; justify-content: left;">
+  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" class="btn btn-primary big-button" role="button">ARBETE</a>
+  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" class="btn btn-primary big-button" role="button">UTBILDNING</a>
+</div>
 
 
 

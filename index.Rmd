@@ -47,7 +47,6 @@ colnames(kommuner_karta) <- c("RegSO" , "Kommun" , "geom")
 rm(data)
 
 
-
 ### Dataprep
 
 # Valdeltagande riksdagsval
@@ -302,6 +301,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = Kön,
              text = paste(Parti, "\nKön: ", Kön, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
+  xlab("Andel, %") +
   ss_theme +
   scale_fill_manual(values = c("Kvinnor" = "#DDDD00",
                                "Män" = "#ff8c00")) -> p_partisympatier_kön
@@ -314,76 +314,63 @@ ggplotly(p_partisympatier_kön, tooltip = "text") %>%
 
 ### Vänster/högersympatier efter kön
 ```{r}
-df1 <- partisympati_kön_ålder %>% 
-  filter(Kön != "Båda",
-         Ålder == "Totalt") %>% 
-  pivot_longer(!c(År, Kön, Ålder) , names_to = "Parti" , values_to = "Andel")
-
-df1_blå <- df1 %>%
-  filter(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna")) %>%
-  group_by(År, Kön , Ålder) %>% 
-  summarise(Blå = sum(Andel, na.rm = TRUE))
-
-df1_röd <- df1 %>%
-  filter(Parti %in% c("Miljöpartiet", "Socialdemokraterna", 
-                      "Vänsterpartiet", "Centerpartiet")) %>%
-  group_by(År, Kön , Ålder) %>% 
-  summarise(Röd = sum(Andel, na.rm = TRUE))
-
-df1_combined <- cbind(df1_blå, df1_röd) 
-df1_combined <- df1_combined %>%
-  select(-c(5, 6, 7))
-colnames(df1_combined) <- c("År" , "Kön" , "Ålder" , "Blå" , "Röd")
-df1_combined <- df1_combined %>% 
-  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 2) ,
-         Kön_Ålder = paste(Kön, Ålder, sep = ", "))
-
-df1_combined$År <- as.factor(df1_combined$År)
-
-df1_combined %>% 
-  ggplot(aes(x = År , y = Blocktillhörighet , group = Kön_Ålder , color = Kön_Ålder)) +
-  geom_line(linewidth = 1) +
-  ss_theme
-
-
-
-
-
-df2 <- partisympati_kön_ålder %>% 
+df <- partisympati_kön_ålder %>% 
   filter(Kön != "Båda") %>% 
   pivot_longer(!c(År, Kön, Ålder) , names_to = "Parti" , values_to = "Andel")
 
-df2_blå <- df2 %>%
+df_blå <- df %>%
   filter(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna")) %>%
   group_by(År, Kön , Ålder) %>% 
   summarise(Blå = sum(Andel, na.rm = TRUE))
 
-df2_röd <- df2 %>%
+df_röd <- df %>%
   filter(Parti %in% c("Miljöpartiet", "Socialdemokraterna", 
                       "Vänsterpartiet", "Centerpartiet")) %>%
   group_by(År, Kön , Ålder) %>% 
   summarise(Röd = sum(Andel, na.rm = TRUE))
 
-df2_combined <- cbind(df2_blå, df2_röd) 
-df2_combined <- df2_combined %>%
+df_combined <- cbind(df_blå, df_röd) 
+df_combined <- df_combined %>%
   select(-c(5, 6, 7))
-colnames(df2_combined) <- c("År" , "Kön" , "Ålder" , "Blå" , "Röd")
-df2_combined <- df2_combined %>% 
+colnames(df_combined) <- c("År" , "Kön" , "Ålder" , "Blå" , "Röd")
+
+df_combined <- df_combined %>% 
   mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 2) ,
          Kön_Ålder = paste(Kön, Ålder, sep = ", "))
+df_combined$År <- as.factor(df_combined$År)
+df_combined$highlight <- ifelse(df_combined$Kön_Ålder %in% c("Kvinnor, Totalt", "Män, Totalt"), 1.5, 0.5)
 
-df2_combined$År <- as.factor(df2_combined$År)
 
-df2_combined %>% 
-  ggplot(aes(x = År , y = Blocktillhörighet , group = Kön_Ålder , color = Kön_Ålder)) +
-  geom_line(linewidth = 1) +
-  ss_theme
+df_combined %>% 
+  filter(!År %in% c("2006", "2007", "2008",   # Då Centerpartiet var ett högerparti fram till 2018
+                    "2009", "2010", "2011" , 
+                    "2012" , "2013" , "2014" , 
+                    "2015" , "2016" ,"2017")) %>% 
+  ggplot(aes(x = År , y = Blocktillhörighet , group = Kön_Ålder , color = Kön_Ålder , size = highlight ,
+             text = paste(År, "\nKategori: " , Kön_Ålder, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
+  geom_line() +  
+  scale_size_identity() +
+  scale_y_continuous(limits = c(0.25, 0.75), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  scale_color_manual(values = c("Kvinnor, 18-29" = "#ffb1b1",
+                                "Kvinnor, 30-49" = "#ff6262",
+                                "Kvinnor, 50-64" = "#ff3b3b",
+                                "Kvinnor, 65+" = "#ff0000" ,
+                                "Kvinnor, Totalt" = "#b30000", 
+                                "Män, 18-29" = "#b0e0e6",
+                                "Män, 30-49" = "#64b6ee",
+                                "Män, 50-64" = "#427bd2",
+                                "Män, 65+" = "#2c43b0" ,
+                                "Män, Totalt" = "#1e2791")) +
+  labs(color = "Kategori") +
+  ss_theme -> p_blocksympati_kön_ålder
+
+ggplotly(p_blocksympati_kön_ålder, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
 ```
 
-
-TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
-EN LINJE FÖR MÄN OCH EN FÖR KVINNOR
-EV. EN LINJE PER ÅLDERSGRUPP + TVÅ TJOCKARE LINJER FÖR MÄN RESPEKTIVE KVINNOR SOM HELHET
 
 
 

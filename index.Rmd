@@ -96,12 +96,12 @@ kommuner_karta <- kommuner_karta %>%
 
 
 # Partisympatier efter kön och ålder
-partysympati_kön_ålder <- read_excel("data/partysympati_kön_ålder.xlsx", 
+partisympati_kön_ålder <- read_excel("data/partisympati_kön_ålder.xlsx", 
      col_types = c("numeric", "text", "text", 
          "numeric", "numeric", "numeric", 
          "numeric", "numeric", "numeric", 
          "numeric", "numeric", "numeric"))
-colnames(partysympati_kön_ålder) <- c("År" , "Kön" , "Ålder" , "Moderaterna" , "Centerpartiet" , "Liberalerna" , 
+colnames(partisympati_kön_ålder) <- c("År" , "Kön" , "Ålder" , "Moderaterna" , "Centerpartiet" , "Liberalerna" , 
                                       "Kristdemokraterna" , "Miljöpartiet" , "Socialdemokraterna" , "Vänsterpartiet" , 
                                       "Sverigedemokraterna" , "Övriga partier")
 
@@ -292,7 +292,7 @@ p_kommunval
 
 ### Partisympatier efter kön
 ```{r}
-df <- partysympati_kön_ålder %>% 
+df <- partisympati_kön_ålder %>% 
   filter(Ålder == "Totalt" ,
          År == 2024 ,
          Kön != "Båda") %>%
@@ -314,20 +314,70 @@ ggplotly(p_partisympatier_kön, tooltip = "text") %>%
 
 ### Vänster/högersympatier efter kön
 ```{r}
-df <- partysympati_kön_ålder %>% 
+df1 <- partisympati_kön_ålder %>% 
   filter(Kön != "Båda",
          Ålder == "Totalt") %>% 
-  pivot_longer(!c(År, Kön, Ålder) , names_to = "Parti" , values_to = "Andel") %>% 
-  group_by(År, Kön) %>% 
-  reframe(Andel = Andel ,
-          Parti = Parti) %>% 
-  mutate(Färg = ifelse(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna"), "Blå", "Röd")) %>% 
-  filter(Parti != "Övriga partier")
-  
-  
+  pivot_longer(!c(År, Kön, Ålder) , names_to = "Parti" , values_to = "Andel")
+
+df1_blå <- df1 %>%
+  filter(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna")) %>%
+  group_by(År, Kön , Ålder) %>% 
+  summarise(Blå = sum(Andel, na.rm = TRUE))
+
+df1_röd <- df1 %>%
+  filter(Parti %in% c("Miljöpartiet", "Socialdemokraterna", 
+                      "Vänsterpartiet", "Centerpartiet")) %>%
+  group_by(År, Kön , Ålder) %>% 
+  summarise(Röd = sum(Andel, na.rm = TRUE))
+
+df1_combined <- cbind(df1_blå, df1_röd) 
+df1_combined <- df1_combined %>%
+  select(-c(5, 6, 7))
+colnames(df1_combined) <- c("År" , "Kön" , "Ålder" , "Blå" , "Röd")
+df1_combined <- df1_combined %>% 
+  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 2) ,
+         Kön_Ålder = paste(Kön, Ålder, sep = ", "))
+
+df1_combined$År <- as.factor(df1_combined$År)
+
+df1_combined %>% 
+  ggplot(aes(x = År , y = Blocktillhörighet , group = Kön_Ålder , color = Kön_Ålder)) +
+  geom_line(linewidth = 1) +
+  ss_theme
 
 
 
+
+
+df2 <- partisympati_kön_ålder %>% 
+  filter(Kön != "Båda") %>% 
+  pivot_longer(!c(År, Kön, Ålder) , names_to = "Parti" , values_to = "Andel")
+
+df2_blå <- df2 %>%
+  filter(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna")) %>%
+  group_by(År, Kön , Ålder) %>% 
+  summarise(Blå = sum(Andel, na.rm = TRUE))
+
+df2_röd <- df2 %>%
+  filter(Parti %in% c("Miljöpartiet", "Socialdemokraterna", 
+                      "Vänsterpartiet", "Centerpartiet")) %>%
+  group_by(År, Kön , Ålder) %>% 
+  summarise(Röd = sum(Andel, na.rm = TRUE))
+
+df2_combined <- cbind(df2_blå, df2_röd) 
+df2_combined <- df2_combined %>%
+  select(-c(5, 6, 7))
+colnames(df2_combined) <- c("År" , "Kön" , "Ålder" , "Blå" , "Röd")
+df2_combined <- df2_combined %>% 
+  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 2) ,
+         Kön_Ålder = paste(Kön, Ålder, sep = ", "))
+
+df2_combined$År <- as.factor(df2_combined$År)
+
+df2_combined %>% 
+  ggplot(aes(x = År , y = Blocktillhörighet , group = Kön_Ålder , color = Kön_Ålder)) +
+  geom_line(linewidth = 1) +
+  ss_theme
 ```
 
 

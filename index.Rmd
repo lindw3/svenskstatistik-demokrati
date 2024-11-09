@@ -104,9 +104,35 @@ colnames(partisympati_kön_ålder) <- c("År" , "Kön" , "Ålder" , "Moderaterna
                                       "Kristdemokraterna" , "Miljöpartiet" , "Socialdemokraterna" , "Vänsterpartiet" , 
                                       "Sverigedemokraterna" , "Övriga partier")
 
+# Partisympatier efter kön och utbildningsnivå
+partisympati_kön_utb <- read_excel("data/partisympati_kön_utb.xlsx", 
+     col_types = c("numeric", "text", "text", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric"))
+colnames(partisympati_kön_utb) <- c("År" , "Kön" , "Utbildning" , "Moderaterna" , "Centerpartiet" , "Liberalerna" , 
+                                      "Kristdemokraterna" , "Miljöpartiet" , "Socialdemokraterna" , "Vänsterpartiet" , 
+                                      "Sverigedemokraterna" , "Övriga partier")
 
+# Partisympatier efter kön och inkomst
+partisympati_kön_inkomst <- read_excel("data/partisympati_kön_inkomst.xlsx", 
+     col_types = c("numeric", "text", "text", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric"))
+colnames(partisympati_kön_inkomst) <- c("År" , "Kön" , "Inkomst" , "Moderaterna" , "Centerpartiet" , "Liberalerna" , 
+                                      "Kristdemokraterna" , "Miljöpartiet" , "Socialdemokraterna" , "Vänsterpartiet" , 
+                                      "Sverigedemokraterna" , "Övriga partier")
 
-
+# Partisympati efter kön och bakgrund
+partisympati_kön_bakgrund <- read_excel("data/partisympati_kön_bakgrund.xlsx", 
+     col_types = c("numeric", "text", "text", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric"))
+colnames(partisympati_kön_bakgrund) <- c("År" , "Kön" , "Bakgrund" , "Moderaterna" , "Centerpartiet" , "Liberalerna" , 
+                                      "Kristdemokraterna" , "Miljöpartiet" , "Socialdemokraterna" , "Vänsterpartiet" , 
+                                      "Sverigedemokraterna" , "Övriga partier")
 
 
 # Tema
@@ -338,7 +364,7 @@ df_combined <- df_combined %>%
 colnames(df_combined) <- c("År" , "Kön" , "Ålder" , "Blå" , "Röd")
 
 df_combined <- df_combined %>% 
-  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 2) ,
+  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 3) ,
          Kön_Ålder = paste(Kön, Ålder, sep = ", "))
 df_combined$År <- as.factor(df_combined$År)
 df_combined$highlight <- ifelse(df_combined$Kön_Ålder %in% c("Kvinnor, Totalt", "Män, Totalt"), 1.5, 0.5)
@@ -431,6 +457,7 @@ ggplotly(p_partisympatier_kön, tooltip = "text") %>%
 ### Vänster/högersympatier efter ålder, tidslinje
 ```{r}
 df <- partisympati_kön_ålder %>% 
+  filter(Kön == "Båda") %>% 
   select(!Kön) %>% 
   filter(Ålder != "Totalt") %>% 
   pivot_longer(!c(År, Ålder) , names_to = "Parti" , values_to = "Andel")
@@ -452,21 +479,21 @@ df_combined <- df_combined %>%
 colnames(df_combined) <- c("År" ,  "Ålder" , "Blå" , "Röd")
 
 df_combined <- df_combined %>% 
-  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 2))
+  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 3))
 df_combined$År <- as.factor(df_combined$År)
 
 df_combined %>% 
   filter(!År %in% c("2006", "2007", "2008",   # Då Centerpartiet var ett högerparti fram till 2018
                     "2009", "2010", "2011" , 
                     "2012" , "2013" , "2014" , 
-                    "2015" , "2016" ,"2017")) %>% 
+                    "2015" , "2016" ,"2017" , "2018")) %>% 
   ggplot(aes(x = År , y = Blocktillhörighet , group = Ålder , color = Ålder,
              text = paste(År, "\nKategori: " , Ålder, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line(linewidth = 1) +  
   scale_y_continuous(limits = c(0.4, 0.6), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
-  scale_x_discrete(breaks = c("2018" , "2024")) +
+  scale_x_discrete(breaks = c("2019" , "2024")) +
   scale_color_manual(values = c("18-29" = "#ffb1b1",
                                "30-49" = "#64b6ee" ,
                                "50-64" = "#94c58c",
@@ -507,11 +534,96 @@ SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR ÅLDERSKATEGORI + K�
 ## {.tabset .tabset-pills}
 
 ### Partisympatier efter utbildningsbakgrund
-SENASTE VALET, STAPELDIAGRAM DODGE, UTBILDNINGSBAKGRUND
+```{r}
+levels = c("Eftergymnasial, 3+ år" , "Eftergymnasial, -3 år" ,  "Gymnasial" , "Förgymnasial")
+
+df <- partisympati_kön_utb %>% 
+  filter(År == 2024 ,
+         Kön == "Båda") %>%
+  pivot_longer(!c(År, Kön, Utbildning) , names_to = "Parti" , values_to = "Andel")
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = factor(Utbildning , level = levels),
+             text = paste(Parti, "\nUtbildning: ", Utbildning, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Utbildningsnivå") +
+  ss_theme +
+  scale_fill_manual(values = c("Förgymnasial" = "#ffb1b1",
+                               "Gymnasial" = "#64b6ee" ,
+                               "Eftergymnasial, -3 år" = "#94c58c",
+                               "Eftergymnasial, 3+ år" = "#ffff9a")) -> p_partisympatier_utb
+
+ggplotly(p_partisympatier_utb, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+```
+
 
 ### Vänster/högersympatier efter utbildningsbakgrund, tidslinje
-TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
-EN LINJE PER KATEGORI
+```{r}
+df <- partisympati_kön_utb %>% 
+  filter(Kön == "Båda") %>% 
+  select(!Kön) %>% 
+  pivot_longer(!c(År, Utbildning) , names_to = "Parti" , values_to = "Andel")
+
+df_blå <- df %>%
+  filter(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna")) %>%
+  group_by(År, Utbildning) %>% 
+  summarise(Blå = sum(Andel, na.rm = TRUE))
+
+df_röd <- df %>%
+  filter(Parti %in% c("Miljöpartiet", "Socialdemokraterna", 
+                      "Vänsterpartiet", "Centerpartiet")) %>%
+  group_by(År, Utbildning) %>% 
+  summarise(Röd = sum(Andel, na.rm = TRUE))
+
+df_combined <- cbind(df_blå, df_röd) 
+df_combined <- df_combined %>%
+  select(-c(4, 5))
+colnames(df_combined) <- c("År" ,  "Utbildning" , "Blå" , "Röd")
+
+df_combined <- df_combined %>% 
+  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 3))
+df_combined$År <- as.factor(df_combined$År)
+
+df_combined %>% 
+  filter(!År %in% c("2006", "2007", "2008",   # Då Centerpartiet var ett högerparti fram till 2018
+                    "2009", "2010", "2011" , 
+                    "2012" , "2013" , "2014" , 
+                    "2015" , "2016" ,"2017" , "2018")) %>% 
+  ggplot(aes(x = År , y = Blocktillhörighet , group = Utbildning , color = Utbildning,
+             text = paste(År, "\nUtbildning: " , Utbildning, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0.3, 0.7), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  scale_x_discrete(breaks = c("2019" , "2024")) +
+  scale_color_manual(values = c("Förgymnasial" = "#ffb1b1",
+                               "Gymnasial" = "#64b6ee" ,
+                               "Eftergymnasial, -3 år" = "#94c58c",
+                               "Eftergymnasial, 3+ år" = "#ffff9a")) +
+  ss_theme -> p_blocksympati_utb
+
+ggplotly(p_blocksympati_utb, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Höger",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Vänster",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+
+```
 
 
 ### Vänster/högersympatier efter utbildningsbakgrund och kön
@@ -526,11 +638,100 @@ SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖ
 ## {.tabset .tabset-pills}
 
 ### Partisympatier efter inkomstpercentil
-SENASTE VALET, STAPELDIAGRAM DODGE, INKOMSTPERCENTIL
+```{r}
+levels = c("81-100 %" , "61-80 %" ,  "41-60 %" , "21-40 %" , "0-20 %")
+
+df <- partisympati_kön_inkomst %>% 
+  filter(År == 2024 ,
+         Kön == "Båda") %>%
+  pivot_longer(!c(År, Kön, Inkomst) , names_to = "Parti" , values_to = "Andel")
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = factor(Inkomst , level = levels),
+             text = paste(Parti, "\nInkomst: ", Inkomst, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Inkomstpercentil") +
+  ss_theme +
+  scale_fill_manual(values = c("0-20 %" = "#ffb1b1",
+                               "21-40 %" = "#64b6ee" ,
+                               "41-60 %" = "#94c58c",
+                               "61-80 %" = "#ffff9a" ,
+                               "81-100 %" = "#ffcff1")) -> p_partisympatier_inkomst
+
+ggplotly(p_partisympatier_inkomst, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+
+
+```
 
 ### Vänster/högersympatier efter inkomstpercentil, tidslinje
-TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
-EN LINJE PER KATEGORI
+```{r}
+df <- partisympati_kön_inkomst %>% 
+  filter(Kön == "Båda") %>% 
+  select(!Kön) %>% 
+  pivot_longer(!c(År, Inkomst) , names_to = "Parti" , values_to = "Andel")
+
+df_blå <- df %>%
+  filter(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna")) %>%
+  group_by(År, Inkomst) %>% 
+  summarise(Blå = sum(Andel, na.rm = TRUE))
+
+df_röd <- df %>%
+  filter(Parti %in% c("Miljöpartiet", "Socialdemokraterna", 
+                      "Vänsterpartiet", "Centerpartiet")) %>%
+  group_by(År, Inkomst) %>% 
+  summarise(Röd = sum(Andel, na.rm = TRUE))
+
+df_combined <- cbind(df_blå, df_röd) 
+df_combined <- df_combined %>%
+  select(-c(4, 5))
+colnames(df_combined) <- c("År" ,  "Inkomst" , "Blå" , "Röd")
+
+df_combined <- df_combined %>% 
+  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 3))
+df_combined$År <- as.factor(df_combined$År)
+
+df_combined %>% 
+  filter(!År %in% c("2006", "2007", "2008",   # Då Centerpartiet var ett högerparti fram till 2018
+                    "2009", "2010", "2011" , 
+                    "2012" , "2013" , "2014" , 
+                    "2015" , "2016" ,"2017" , "2018")) %>% 
+  ggplot(aes(x = År , y = Blocktillhörighet , group = Inkomst , color = Inkomst,
+             text = paste(År, "\nInkomst: " , Inkomst, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0.3, 0.7), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  scale_x_discrete(breaks = c("2019" , "2024")) +
+  scale_color_manual(values = c("0-20 %" = "#ffb1b1",
+                               "21-40 %" = "#64b6ee" ,
+                               "41-60 %" = "#94c58c",
+                               "61-80 %" = "#ffff9a" ,
+                               "81-100 %" = "#ffcff1")) +
+  ss_theme -> p_blocksympati_inkomst
+
+ggplotly(p_blocksympati_inkomst, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Höger",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Vänster",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+
+
+```
 
 
 ### Vänster/högersympatier efter inkomstpercentil och kön
@@ -545,11 +746,90 @@ SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖ
 ## {.tabset .tabset-pills}
 
 ### Partisympatier utifrån 
-SENASTE VALET, STAPELDIAGRAM DODGE, SVENSK/UTLÄNDSK BAKGRUND
+```{r}
+df <- partisympati_kön_bakgrund %>% 
+  filter(År == 2024 ,
+         Kön == "Båda") %>%
+  pivot_longer(!c(År, Kön, Bakgrund) , names_to = "Parti" , values_to = "Andel")
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = Bakgrund,
+             text = paste(Parti, "\nBakgrund: ", Bakgrund, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Bakgrund") +
+  ss_theme +
+  scale_fill_manual(values = c("Utländsk" = "#ffb1b1",
+                               "Svensk" = "#64b6ee")) -> p_partisympatier_bakgrund
+
+ggplotly(p_partisympatier_bakgrund, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+```
+
 
 ### Vänster/högersympatier efter inkomstpercentil, tidslinje
-TIDSLINJE MED UPPDELNING VÄNSTER/HÖGER DÄR 50/50 RÖSTER. 0 = 100 % RÖSTAR VÄNSTER, 100 = 100 % RÖSTAR HÖGER.
-EN LINJE PER KATEGORI
+```{r}
+df <- partisympati_kön_bakgrund %>% 
+  filter(Kön == "Båda") %>% 
+  select(!Kön) %>% 
+  pivot_longer(!c(År, Bakgrund) , names_to = "Parti" , values_to = "Andel")
+
+df_blå <- df %>%
+  filter(Parti %in% c("Moderaterna", "Liberalerna", "Kristdemokraterna", "Sverigedemokraterna")) %>%
+  group_by(År, Bakgrund) %>% 
+  summarise(Blå = sum(Andel, na.rm = TRUE))
+
+df_röd <- df %>%
+  filter(Parti %in% c("Miljöpartiet", "Socialdemokraterna", 
+                      "Vänsterpartiet", "Centerpartiet")) %>%
+  group_by(År, Bakgrund) %>% 
+  summarise(Röd = sum(Andel, na.rm = TRUE))
+
+df_combined <- cbind(df_blå, df_röd) 
+df_combined <- df_combined %>%
+  select(-c(4, 5))
+colnames(df_combined) <- c("År" ,  "Bakgrund" , "Blå" , "Röd")
+
+df_combined <- df_combined %>% 
+  mutate(Blocktillhörighet = round(Blå / (Blå + Röd) , 3))
+df_combined$År <- as.factor(df_combined$År)
+
+df_combined %>% 
+  filter(!År %in% c("2006", "2007", "2008",   # Då Centerpartiet var ett högerparti fram till 2018
+                    "2009", "2010", "2011" , 
+                    "2012" , "2013" , "2014" , 
+                    "2015" , "2016" ,"2017" , "2018")) %>% 
+  ggplot(aes(x = År , y = Blocktillhörighet , group = Bakgrund , color = Bakgrund,
+             text = paste(År, "\nBakgrund: " , Bakgrund, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0.3, 0.7), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  scale_x_discrete(breaks = c("2019" , "2024")) +
+  scale_color_manual(values = c("Utländsk" = "#ffb1b1",
+                               "Svensk" = "#64b6ee")) +
+  ss_theme -> p_blocksympati_bakgrund
+
+ggplotly(p_blocksympati_bakgrund, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Höger",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Vänster",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+```
+
 
 
 ### Vänster/högersympatier efter inkomstpercentil och kön

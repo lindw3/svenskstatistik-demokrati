@@ -134,6 +134,9 @@ colnames(partisympati_kön_bakgrund) <- c("År" , "Kön" , "Bakgrund" , "Moderat
                                       "Kristdemokraterna" , "Miljöpartiet" , "Socialdemokraterna" , "Vänsterpartiet" , 
                                       "Sverigedemokraterna" , "Övriga partier")
 
+# Förtroendevalda efter kön och ålder
+förtroendevalda_kommun_ålder <- read_excel("data/förtroendevalda_kommun_ålder.xlsx")
+
 
 # Tema
 ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,
@@ -848,9 +851,51 @@ SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖ
 
 
 
-# Förtroendevalda efter kön {data-navmenu="Förtroendevalda"}
+# Förtroendevalda efter kön {data-navmenu="Förtroendevalda i kommuner"}
 ##
-###
+### Andel förtroendevalda efter kön och parti
+STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+
+
+
+### Könsfördelning utifrån kön och ålder, tidslinje
+SOM BLOCKTILLHÖRIGHET FAST KÖNSFÖRDELNING. KVINNOR OCH MÄN I SAMTLIGA ÅLDERSKATEGORIER
+
+# Förtroendevalda efter ålder {data-navmenu="Förtroendevalda i kommuner"}
+##
+### Andel förtroendevalda i kommuner efter ålderskategori
+STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+
+### Könsfördelning utifrån ålderskategorier, tidslinje
+
+
+
+# Förtroendevalda efter utbildning {data-navmenu="Förtroendevalda i kommuner"}
+##
+### Andel förtroendevalda i kommuner efter utbildning
+STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+
+### Könsfördelning utifrån utbildning, tidslinje
+
+
+
+
+# Förtroendevalda efter inkomst {data-navmenu="Förtroendevalda i kommuner"}
+##
+### Andel förtroendevalda i kommuner efter inkomstpercentil
+STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+
+### Könsfördelning utifrån inkomstpercentil, tidslinje
+
+
+
+
+# Förtroendevalda efter bakgrund {data-navmenu="Förtroendevalda i kommuner"}
+##
+### Andel förtroendevalda i kommuner efter bakgrund
+STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+
+### Könsfördelning utifrån bakgrund, tidslinje
 
 
 

@@ -139,6 +139,11 @@ förtroendevalda_kommun_ålder <- read_excel("data/förtroendevalda_kommun_ålde
 förtroendevalda_kommun_ålder <- förtroendevalda_kommun_ålder %>% 
   pivot_longer(!c(Parti, Kön, Kategori, Mätvariabel) , names_to = "År" , values_to = "Andel")
 
+# Förtroendevalda efter kön och utbildning
+förtroendevalda_kommun_utbildning <- read_excel("data/förtroendevalda_kommun_utbildning.xlsx")
+förtroendevalda_kommun_utbildning <- förtroendevalda_kommun_utbildning %>% 
+  pivot_longer(!c(Parti, Kön, Utbildning, Mätvariabel) , names_to = "År" , values_to = "Andel")
+
 
 # Tema
 ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,

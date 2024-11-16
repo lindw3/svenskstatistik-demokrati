@@ -389,7 +389,7 @@ df_combined %>%
              text = paste(År, "\nKategori: " , Kön_Ålder, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line() +  
   scale_size_identity() + 
-  scale_y_continuous(limits = c(0.25, 0.75), 
+  scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
   scale_x_discrete(breaks = c("2018" , "2024")) +
@@ -500,7 +500,7 @@ df_combined %>%
   ggplot(aes(x = År , y = Blocktillhörighet , group = Ålder , color = Ålder,
              text = paste(År, "\nKategori: " , Ålder, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line(linewidth = 1) +  
-  scale_y_continuous(limits = c(0.4, 0.6), 
+  scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
   scale_x_discrete(breaks = c("2019" , "2024")) +
@@ -605,7 +605,7 @@ df_combined %>%
   ggplot(aes(x = År , y = Blocktillhörighet , group = Utbildning , color = Utbildning,
              text = paste(År, "\nUtbildning: " , Utbildning, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line(linewidth = 1) +  
-  scale_y_continuous(limits = c(0.3, 0.7), 
+  scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
   scale_x_discrete(breaks = c("2019" , "2024")) +
@@ -711,7 +711,7 @@ df_combined %>%
   ggplot(aes(x = År , y = Blocktillhörighet , group = Inkomst , color = Inkomst,
              text = paste(År, "\nInkomst: " , Inkomst, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line(linewidth = 1) +  
-  scale_y_continuous(limits = c(0.3, 0.7), 
+  scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
   scale_x_discrete(breaks = c("2019" , "2024")) +
@@ -813,7 +813,7 @@ df_combined %>%
   ggplot(aes(x = År , y = Blocktillhörighet , group = Bakgrund , color = Bakgrund,
              text = paste(År, "\nBakgrund: " , Bakgrund, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line(linewidth = 1) +  
-  scale_y_continuous(limits = c(0.3, 0.7), 
+  scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
   scale_x_discrete(breaks = c("2019" , "2024")) +
@@ -881,7 +881,7 @@ df %>%
   scale_fill_manual(values = c("Kvinnor" = "#ffb1b1",
                                "Män" = "#64b6ee")) -> p_förtroendevalda_kön
 
-ggplotly(p_partisympatier_bakgrund, tooltip = "text") %>%
+ggplotly(p_förtroendevalda_kön, tooltip = "text") %>%
   config(displayModeBar = F) %>%
   layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
 
@@ -900,8 +900,8 @@ df %>%
   ggplot(aes(x = År , y = Andel/100 , group = Parti , color = Parti,
              text = paste(År, "\nParti: " , Parti, "\nAndel män: " , Andel , "%"))) +
   geom_line(linewidth = 1) +  
-  scale_y_continuous(limits = c(0.2 , 0.8), 
-                     breaks = 0.5, 
+  scale_y_continuous(limits = c(0 , 1), 
+                     breaks = c(0.5), 
                      labels = scales::percent_format(accuracy = 1)) +
   ylab("Andel, %") +
   partifärger_colour +
@@ -976,7 +976,7 @@ df %>%
   ggplot(aes(x = År , y = Andel/100 , group = Kategori , color = Kategori,
              text = paste(År, "\nÅlder: " , Kategori, "\nAndel män: " , Andel , "%"))) +
   geom_line(linewidth = 1) +  
-  scale_y_continuous(limits = c(0.3 , 0.7), 
+  scale_y_continuous(limits = c(0 , 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
   ylab("Andel, %") +

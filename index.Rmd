@@ -136,6 +136,8 @@ colnames(partisympati_kön_bakgrund) <- c("År" , "Kön" , "Bakgrund" , "Moderat
 
 # Förtroendevalda efter kön och ålder
 förtroendevalda_kommun_ålder <- read_excel("data/förtroendevalda_kommun_ålder.xlsx")
+förtroendevalda_kommun_ålder <- förtroendevalda_kommun_ålder %>% 
+  pivot_longer(!c(Parti, Kön, Kategori, Mätvariabel) , names_to = "År" , values_to = "Andel")
 
 
 # Tema
@@ -854,19 +856,149 @@ SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖ
 # Förtroendevalda efter kön {data-navmenu="Förtroendevalda i kommuner"}
 ##
 ### Andel förtroendevalda efter kön och parti
-STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+```{r}
+df <- förtroendevalda_kommun_ålder %>% 
+  filter(Kategori == "Totalt" ,
+         Kön != "Båda" ,
+         Mätvariabel == "Könsfördelning" ,
+         År == "2023-2026" ,
+         Parti != "Totalt") %>% 
+  group_by(Parti, Kön) %>% 
+  summarize(Andel = Andel)
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = Kön,
+             text = paste(Parti, "\nKön: ", Kön, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Kön") +
+  ss_theme +
+  scale_fill_manual(values = c("Kvinnor" = "#ffb1b1",
+                               "Män" = "#64b6ee")) -> p_förtroendevalda_kön
+
+ggplotly(p_partisympatier_bakgrund, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+
+```
 
 
 
-### Könsfördelning utifrån kön och ålder, tidslinje
-SOM BLOCKTILLHÖRIGHET FAST KÖNSFÖRDELNING. KVINNOR OCH MÄN I SAMTLIGA ÅLDERSKATEGORIER
+### Könsfördelning utifrån parti, tidslinje
+```{r}
+df <- förtroendevalda_kommun_ålder %>% 
+  filter(Kön == "Män",
+         Mätvariabel == "Könsfördelning" ,
+         Kategori == "Totalt"
+         )
+df %>% 
+  ggplot(aes(x = År , y = Andel/100 , group = Parti , color = Parti,
+             text = paste(År, "\nParti: " , Parti, "\nAndel män: " , Andel , "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0.2 , 0.8), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") +
+  partifärger_colour +
+  ss_theme -> p_förtroendevalda_kön_år
+
+ggplotly(p_förtroendevalda_kön_år, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Män",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Kvinnor",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+```
+
+
 
 # Förtroendevalda efter ålder {data-navmenu="Förtroendevalda i kommuner"}
 ##
 ### Andel förtroendevalda i kommuner efter ålderskategori
-STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+```{r}
+levels = c("65+ år" , "50-64 år" , "30-49 år" , "18-29 år")
+
+df <- förtroendevalda_kommun_ålder %>% 
+  filter(Kategori != "Totalt" ,
+         Kön == "Båda" ,
+         Mätvariabel == "Förtroendevalda, andel" ,
+         År == "2023-2026" ,
+         Parti != "Totalt") %>% 
+  group_by(Parti, Kategori) %>% 
+  summarize(Andel = Andel)
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = factor(Kategori, levels = levels),
+             text = paste(Parti, "\nÅlder: ", Kategori, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Ålder") +
+  ss_theme +
+  scale_fill_manual(values = c("18-29 år" = "#ffb1b1",
+                               "30-49 år" = "#64b6ee" ,
+                               "50-64 år" = "#94c58c",
+                               "65+ år" = "#ffff9a")) -> p_förtroendevalda_ålder
+
+ggplotly(p_förtroendevalda_ålder, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+
+```
+
+
+
 
 ### Könsfördelning utifrån ålderskategorier, tidslinje
+```{r}
+df <- förtroendevalda_kommun_ålder %>% 
+  filter(Kön == "Män",
+         Mätvariabel == "Könsfördelning" ,
+         Kategori != "Totalt" ,
+         Parti == "Totalt"
+         )
+df %>% 
+  ggplot(aes(x = År , y = Andel/100 , group = Kategori , color = Kategori,
+             text = paste(År, "\nÅlder: " , Kategori, "\nAndel män: " , Andel , "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0.3 , 0.7), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") +
+  scale_colour_manual(values = c("18-29 år" = "#ffb1b1",
+                               "30-49 år" = "#64b6ee" ,
+                               "50-64 år" = "#94c58c",
+                               "65+ år" = "#ffff9a")) +
+  ss_theme -> p_förtroendevalda_kön_ålder_år
+
+ggplotly(p_förtroendevalda_kön_ålder_år, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Män",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Kvinnor",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+```
 
 
 

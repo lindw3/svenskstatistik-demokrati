@@ -38,6 +38,7 @@ library(cluster)
 library(sf)
 library(ggrepel)
 library(ggtext)
+library(readxl)
 
 # Karta
 data <- st_read("C:\\Users\\WILIDF17\\OneDrive - Sveriges Riksidrottsförbund\\Dokument\\GitHub\\svenskstatistik-demokrati\\data\\RegSO_2018_v2.gpkg" , layer = "RegSO_2018_v2")
@@ -50,7 +51,6 @@ rm(data)
 ### Dataprep
 
 # Valdeltagande riksdagsval
-library(readxl)
 valdeltagande <- read_excel("data/valdeltagande.xlsx")
 
 # Valresultat i riksdagsval
@@ -1010,9 +1010,75 @@ ggplotly(p_förtroendevalda_kön_ålder_år, tooltip = "text") %>%
 # Förtroendevalda efter utbildning {data-navmenu="Förtroendevalda i kommuner"}
 ##
 ### Andel förtroendevalda i kommuner efter utbildning
-STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+```{r}
+levels = c("Eftergymnasial" , "Gymnasial" , "Förgymnasial")
+
+df <- förtroendevalda_kommun_utbildning %>% 
+  filter(Kön == "Båda" ,
+         Mätvariabel == "Förtroendevalda" ,
+         År == "2023-2026" ,
+         Parti != "Totalt") %>% 
+  group_by(Parti, Utbildning) %>% 
+  summarize(Andel = Andel)
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = factor(Utbildning, levels = levels),
+             text = paste(Parti, "\nÅlder: ", Utbildning, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Utbildning") +
+  ss_theme +
+  scale_fill_manual(values = c("Förgymnasial" = "#ffb1b1",
+                               "Gymnasial" = "#64b6ee" ,
+                               "Eftergymnasial" = "#94c58c")) -> p_förtroendevalda_utbildning
+
+ggplotly(p_förtroendevalda_utbildning, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+
+```
+
 
 ### Könsfördelning utifrån utbildning, tidslinje
+```{r}
+df <- förtroendevalda_kommun_utbildning %>% 
+  filter(Kön == "Män",
+         Mätvariabel == "Könsfördelning" ,
+         Utbildning != "Totalt" ,
+         Parti == "Totalt"
+         )
+df %>% 
+  ggplot(aes(x = År , y = Andel/100 , group = Utbildning , color = Utbildning,
+             text = paste(År, "\nÅlder: " , Utbildning, "\nAndel män: " , Andel , "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0 , 1), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") +
+  scale_colour_manual(values = c("Förgymnasial" = "#ffb1b1",
+                               "Gymnasial" = "#64b6ee" ,
+                               "Eftergymnasial" = "#94c58c")) +
+  ss_theme -> p_förtroendevalda_kön_utbildning_år
+
+ggplotly(p_förtroendevalda_kön_utbildning_år, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Män",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Kvinnor",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+
+```
 
 
 

@@ -39,6 +39,7 @@ library(sf)
 library(ggrepel)
 library(ggtext)
 library(readxl)
+library(waffle)
 
 # Karta
 data <- st_read("C:\\Users\\WILIDF17\\OneDrive - Sveriges Riksidrottsförbund\\Dokument\\GitHub\\svenskstatistik-demokrati\\data\\RegSO_2018_v2.gpkg" , layer = "RegSO_2018_v2")
@@ -59,6 +60,7 @@ valresultat_sverige <- read_excel("data/valresultat_sverige.xlsx",
                                                        "numeric", "numeric", "numeric", 
                                                        "numeric", "numeric", "numeric", 
                                                        "numeric"))
+
 # Valresultat i EU-val
 valresultat_eu <- read_excel("data/valresultat_eu.xlsx", 
      col_types = c("text", "numeric", "numeric", 
@@ -541,14 +543,6 @@ ggplotly(p_blocksympati_ålder, tooltip = "text") %>%
 ```
 
 
-
-### Vänster/högersympatier efter ålder och kön
-SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR ÅLDERSKATEGORI + KÖN. WAFFLE CHART?
-
-
-
-
-
 # Partisympatier efter utbildning {data-navmenu="Partisympatier"}
 ## {.tabset .tabset-pills}
 
@@ -643,10 +637,6 @@ ggplotly(p_blocksympati_utb, tooltip = "text") %>%
   )
 
 ```
-
-
-### Vänster/högersympatier efter utbildningsbakgrund och kön
-SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
 
 
 
@@ -753,9 +743,6 @@ ggplotly(p_blocksympati_inkomst, tooltip = "text") %>%
 ```
 
 
-### Vänster/högersympatier efter inkomstpercentil och kön
-SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
-
 
 
 
@@ -851,8 +838,6 @@ ggplotly(p_blocksympati_bakgrund, tooltip = "text") %>%
 
 
 
-### Vänster/högersympatier efter inkomstpercentil och kön
-SENASTE VALET, STAPELDIAGRAM STACKED, SEPARATA FÄRGER FÖR VARJE KATEGORI + KÖN. WAFFLE CHART?
 
 
 
@@ -1167,8 +1152,6 @@ ggplotly(p_förtroendevalda_kön_inkomst_år, tooltip = "text") %>%
     font = list(color = "#b30000", size = 16 , family = "Arial Black")
   )
 ```
-
-
 
 
 

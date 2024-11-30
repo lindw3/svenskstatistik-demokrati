@@ -144,6 +144,15 @@ förtroendevalda_kommun_utbildning <- read_excel("data/förtroendevalda_kommun_u
 förtroendevalda_kommun_utbildning <- förtroendevalda_kommun_utbildning %>% 
   pivot_longer(!c(Parti, Kön, Utbildning, Mätvariabel) , names_to = "År" , values_to = "Andel")
 
+# Förtroendevalda efter kön och inkomst
+förtroendevalda_kommun_inkomst <- read_excel("data/förtroendevalda_kommun_inkomst.xlsx")
+förtroendevalda_kommun_inkomst <- förtroendevalda_kommun_inkomst %>% 
+  pivot_longer(!c(Parti, Kön, Inkomstpercentil, Mätvariabel) , names_to = "År" , values_to = "Andel")
+
+# Förtroendevalda efter kön och bakgrund
+förtroendevalda_kommun_bakgrund <- read_excel("data/förtroendevalda_kommun_bakgrund.xlsx")
+förtroendevalda_kommun_bakgrund <- förtroendevalda_kommun_bakgrund %>% 
+  pivot_longer(!c(Parti, Kön, Bakgrund, Mätvariabel) , names_to = "År" , values_to = "Andel")
 
 # Tema
 ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,
@@ -1023,7 +1032,7 @@ df <- förtroendevalda_kommun_utbildning %>%
 
 df %>% 
   ggplot(aes(y = Parti, x = Andel, fill = factor(Utbildning, levels = levels),
-             text = paste(Parti, "\nÅlder: ", Utbildning, "\nAndel: ", Andel, "%"))) +
+             text = paste(Parti, "\nUtbildningsnivå: ", Utbildning, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
   xlab("Andel, %") +
   labs(fill = "Utbildning") +
@@ -1049,7 +1058,7 @@ df <- förtroendevalda_kommun_utbildning %>%
          )
 df %>% 
   ggplot(aes(x = År , y = Andel/100 , group = Utbildning , color = Utbildning,
-             text = paste(År, "\nÅlder: " , Utbildning, "\nAndel män: " , Andel , "%"))) +
+             text = paste(År, "\nUtbildningsnivå: " , Utbildning, "\nAndel män: " , Andel , "%"))) +
   geom_line(linewidth = 1) +  
   scale_y_continuous(limits = c(0 , 1), 
                      breaks = 0.5, 
@@ -1086,9 +1095,80 @@ ggplotly(p_förtroendevalda_kön_utbildning_år, tooltip = "text") %>%
 # Förtroendevalda efter inkomst {data-navmenu="Förtroendevalda i kommuner"}
 ##
 ### Andel förtroendevalda i kommuner efter inkomstpercentil
-STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+```{r}
+levels = c("81-100" , "61-80" , "41-60" , "21-40" , "0-20")
 
-### Könsfördelning utifrån inkomstpercentil, tidslinje
+df <- förtroendevalda_kommun_inkomst %>% 
+  filter(Kön == "Båda" ,
+         Mätvariabel == "Förtroendevalda" ,
+         År == "2023-2026" ,
+         Parti != "Totalt") %>% 
+  group_by(Parti, Inkomstpercentil) %>% 
+  summarize(Andel = Andel)
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = factor(Inkomstpercentil, levels = levels),
+             text = paste(Parti, "\nInkomstpercentil: ", Inkomstpercentil, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Inkomstpercentil") +
+  ss_theme +
+  scale_fill_manual(values = c("0-20" = "#ffb1b1",
+                               "21-40" = "#64b6ee" ,
+                               "41-60" = "#94c58c",
+                               "61-80" = "#ffff9a" ,
+                               "81-100" = "#ffcff1")) -> p_förtroendevalda_inkomst
+
+ggplotly(p_förtroendevalda_inkomst, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+
+```
+
+
+### Könsfördelning utifrån inkomst, tidslinje
+```{r}
+df <- förtroendevalda_kommun_inkomst %>% 
+  filter(Kön == "Män",
+         Mätvariabel == "Könsfördelning" ,
+         Inkomstpercentil != "Totalt" ,
+         Parti == "Totalt"
+         )
+df %>% 
+  ggplot(aes(x = År , y = Andel/100 , group = Inkomstpercentil , color = Inkomstpercentil,
+             text = paste(År, "\nInkomstpercentil: " , Inkomstpercentil, "\nAndel män: " , Andel , "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0 , 1), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") +
+  scale_colour_manual(values = c("0-20" = "#ffb1b1",
+                               "21-40" = "#64b6ee" ,
+                               "41-60" = "#94c58c",
+                               "61-80" = "#ffff9a" ,
+                               "81-100" = "#ffcff1")) +
+  ss_theme -> p_förtroendevalda_kön_inkomst_år
+
+ggplotly(p_förtroendevalda_kön_inkomst_år, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Män",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Kvinnor",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+```
+
+
 
 
 
@@ -1096,9 +1176,69 @@ STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
 # Förtroendevalda efter bakgrund {data-navmenu="Förtroendevalda i kommuner"}
 ##
 ### Andel förtroendevalda i kommuner efter bakgrund
-STACKED BAR CHART MED FÖRDELNING % MÄN/KVINNOR, PARTI PÅ X-AXELN
+```{r}
+levels = c("Inrikes" , "Utrikes")
+
+df <- förtroendevalda_kommun_bakgrund %>% 
+  filter(Kön == "Båda" ,
+         Mätvariabel == "Förtroendevalda" ,
+         År == "2023-2026" ,
+         Parti != "Totalt") %>% 
+  group_by(Parti, Bakgrund) %>% 
+  summarize(Andel = Andel)
+
+df %>% 
+  ggplot(aes(y = Parti, x = Andel, fill = factor(Bakgrund, levels = levels),
+             text = paste(Parti, "\nBakgrund: ", Bakgrund, "\nAndel: ", Andel, "%"))) +
+  geom_col(position = "dodge") +
+  xlab("Andel, %") +
+  labs(fill = "Bakgrund") +
+  ss_theme +
+  scale_x_continuous(breaks = c(0 , 100) , limits = c(0 , 100)) +
+  scale_fill_manual(values = c("Inrikes" = "#ffb1b1",
+                               "Utrikes" = "#64b6ee")) -> p_förtroendevalda_bakgrund
+
+ggplotly(p_förtroendevalda_bakgrund, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) 
+```
+
 
 ### Könsfördelning utifrån bakgrund, tidslinje
+```{r}
+df <- förtroendevalda_kommun_bakgrund %>% 
+  filter(Kön == "Män",
+         Mätvariabel == "Könsfördelning" ,
+         Bakgrund != "Totalt" ,
+         Parti == "Totalt"
+         )
+df %>% 
+  ggplot(aes(x = År , y = Andel/100 , group = Bakgrund , color = Bakgrund,
+             text = paste(År, "\nBakgrund: " , Bakgrund, "\nAndel män: " , Andel , "%"))) +
+  geom_line(linewidth = 1) +  
+  scale_y_continuous(limits = c(0 , 1), 
+                     breaks = 0.5, 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") +
+  scale_colour_manual(values = c("Inrikes" = "#ffb1b1",
+                               "Utrikes" = "#64b6ee")) +
+  ss_theme -> p_förtroendevalda_kön_bakgrund_år
 
-
-
+ggplotly(p_förtroendevalda_kön_bakgrund_år, tooltip = "text") %>%
+  config(displayModeBar = F) %>%
+  layout(legend = list(x = 1.05, y = 0.5, xanchor = "left", yanchor = "middle")) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.9, yref = "paper",
+    text = "Män",
+    showarrow = FALSE,
+    font = list(color = "#1e2791", size = 16 , family = "Arial Black")
+  ) %>%
+  add_annotations(
+    x = 0.5, xref = "paper",
+    y = 0.1, yref = "paper",
+    text = "Kvinnor",
+    showarrow = FALSE,
+    font = list(color = "#b30000", size = 16 , family = "Arial Black")
+  )
+```

@@ -205,7 +205,7 @@ partifärger_fill <- scale_fill_manual(values = c("Centerpartiet" = "#009933" ,
 ```
 
 # Översikt {data-orientation="rows"}
-##
+## {data-height=250}
 ### Om initiativet
 *Svensk statistik* är ett initiativ taget av William Lind med det huvudsakliga syftet att visualisera utvecklingen i Sverige utifrån ett antal parametrar. Genom SCB är Sverige ett land som ligger i framkant i att lagra registerdata och föra annan statistik på befolkningsnivå, men denna statistik är inte alltid så enkel att ta till sig. Detta är ett försök att förenkla möjligheten att ta till sig av denna data.
 <br><br>
@@ -223,17 +223,13 @@ Använd navigationspanelen högst upp för att se svaren utifrån olika områden
 
 ##
 ### Andra områden
-<style>
-  .big-button {
-    font-size: 30px;
-    padding: 20px 40px;
-  }
-</style>
-
-
-<div style="display: flex; gap: 15px; justify-content: left;">
-  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" class="btn btn-primary big-button" role="button">ARBETE</a>
-  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" class="btn btn-primary big-button" role="button">UTBILDNING</a>
+<div style="display: flex; justify-content: space-between; gap: 10px;">
+  <a href="https://lindw3.github.io/svenskstatistik-arbete/" target="_blank">
+    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/arbete.png" width="30%">
+  </a>
+  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" target="_blank">
+    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/utbildning.png" width="30%">
+  </a>
 </div>
 
 

@@ -750,7 +750,7 @@ ggplotly(p_blocksympati_inkomst, tooltip = "text") %>%
 # Partisympatier efter bakgrund {data-navmenu="Partisympatier"}
 ## {.tabset .tabset-pills}
 
-### Partisympatier utifrån 
+### Partisympatier efter bakgrund
 ```{r}
 df <- partisympati_kön_bakgrund %>% 
   filter(År == 2024 ,

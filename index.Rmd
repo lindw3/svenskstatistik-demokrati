@@ -222,8 +222,11 @@ Använd navigationspanelen högst upp för att se svaren utifrån olika områden
 
 
 ##
-### Andra områden
+### Rapporter
 <div style="display: flex; justify-content: space-between; gap: 10px;">
+  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" target="_blank">
+    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/demokrati.png" width="30%">
+  </a>
   <a href="https://lindw3.github.io/svenskstatistik-arbete/" target="_blank">
     <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/arbete.png" width="30%">
   </a>

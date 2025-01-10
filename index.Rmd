@@ -265,7 +265,7 @@ ggplotly(p_valdeltagande, tooltip = "text") %>%
 
 ##  {.tabset .tabset-pills data-width="600"}
 
-### Valresultat i Sverige
+### Valresultat i Riksdagsval
 ```{r}
 df <- valresultat_sverige %>%
   pivot_longer(!År, names_to = "Parti", values_to = "Röster")

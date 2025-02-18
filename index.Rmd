@@ -205,12 +205,12 @@ partifärger_fill <- scale_fill_manual(values = c("Centerpartiet" = "#009933" ,
 ```
 
 # Översikt {data-orientation="rows"}
-## {data-height=200}
+## {data-height=200 .tabset .tabset-pills}
 ### Om initiativet
 *Svensk statistik* är ett initiativ med det huvudsakliga syftet att visualisera utvecklingen i Sverige utifrån ett antal parametrar. Genom SCB är Sverige ett land som ligger i framkant i att lagra registerdata och föra annan statistik på befolkningsnivå, men denna statistik är inte alltid så enkel att ta till sig. Detta är ett försök att förenkla möjligheten att ta till sig av denna data.
 <br><br>
 
-## {data-height=400}
+## {data-height=400 .tabset .tabset-pills}
 ### Om rapporten 
 I denna rapport bemöts området **Demokrati** utifrån dessa områden:
 <br><br>
@@ -221,7 +221,7 @@ I denna rapport bemöts området **Demokrati** utifrån dessa områden:
 Använd navigationspanelen högst upp för att se svaren utifrån olika områden. *Får figurerna inte plats på sidan? Testa att zooma ut genom att hålla in `Ctrl` + `-`.*
 
 
-##
+##  {.tabset .tabset-pills}
 ### Rapporter
 <div style="display: flex; justify-content: space-between; gap: 10px;">
   <a href="https://lindw3.github.io/svenskstatistik-demokrati/" target="_blank">
@@ -852,7 +852,7 @@ ggplotly(p_blocksympati_bakgrund, tooltip = "text") %>%
 
 
 # Förtroendevalda efter kön {data-navmenu="Förtroendevalda i kommuner"}
-##
+## {.tabset .tabset-pills}
 ### Andel förtroendevalda efter kön och parti
 ```{r}
 df <- förtroendevalda_kommun_ålder %>% 
@@ -922,7 +922,7 @@ ggplotly(p_förtroendevalda_kön_år, tooltip = "text") %>%
 
 
 # Förtroendevalda efter ålder {data-navmenu="Förtroendevalda i kommuner"}
-##
+## {.tabset .tabset-pills}
 ### Andel förtroendevalda i kommuner efter ålderskategori
 ```{r}
 levels = c("65+ år" , "50-64 år" , "30-49 år" , "18-29 år")
@@ -1001,7 +1001,7 @@ ggplotly(p_förtroendevalda_kön_ålder_år, tooltip = "text") %>%
 
 
 # Förtroendevalda efter utbildning {data-navmenu="Förtroendevalda i kommuner"}
-##
+## {.tabset .tabset-pills}
 ### Andel förtroendevalda i kommuner efter utbildning
 ```{r}
 levels = c("Eftergymnasial" , "Gymnasial" , "Förgymnasial")
@@ -1077,7 +1077,7 @@ ggplotly(p_förtroendevalda_kön_utbildning_år, tooltip = "text") %>%
 
 
 # Förtroendevalda efter inkomst {data-navmenu="Förtroendevalda i kommuner"}
-##
+## {.tabset .tabset-pills}
 ### Andel förtroendevalda i kommuner efter inkomstpercentil
 ```{r}
 levels = c("81-100" , "61-80" , "41-60" , "21-40" , "0-20")
@@ -1156,7 +1156,7 @@ ggplotly(p_förtroendevalda_kön_inkomst_år, tooltip = "text") %>%
 
 
 # Förtroendevalda efter bakgrund {data-navmenu="Förtroendevalda i kommuner"}
-##
+## {.tabset .tabset-pills}
 ### Andel förtroendevalda i kommuner efter bakgrund
 ```{r}
 levels = c("Inrikes" , "Utrikes")

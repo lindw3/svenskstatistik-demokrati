@@ -95,7 +95,6 @@ df <- valresultat_kommun %>%
 kommuner_karta <- kommuner_karta %>% 
   left_join(df %>% select(Kommun, Färg , Andel), by = "Kommun")
 
-
 # Partisympatier efter kön och ålder
 partisympati_kön_ålder <- read_excel("data/partisympati_kön_ålder.xlsx", 
      col_types = c("numeric", "text", "text", 
@@ -155,6 +154,36 @@ förtroendevalda_kommun_inkomst <- förtroendevalda_kommun_inkomst %>%
 förtroendevalda_kommun_bakgrund <- read_excel("data/förtroendevalda_kommun_bakgrund.xlsx")
 förtroendevalda_kommun_bakgrund <- förtroendevalda_kommun_bakgrund %>% 
   pivot_longer(!c(Parti, Kön, Bakgrund, Mätvariabel) , names_to = "År" , values_to = "Andel")
+
+# Politiskt engagemang efter ålder och kön
+politisktengagemang_ålder_kön <- read_excel("data/politisktengagemang_ålder_kön.xlsx", 
+    col_types = c("text", "text", "text", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric"))
+
+# Politiskt engagemang efter utbildningsnivå
+politisktengagemang_utbildning <- read_excel("data/politisktengagemang_utbildning.xlsx", 
+     col_types = c("text", "text", "text", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric"))
+
+# Politiskt engagemang efter inkomst
+politisktengagemang_inkomst <- read_excel("data/politisktengagemang_inkomst.xlsx", 
+    col_types = c("text", "text", "text", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric"))
+
+# Politiskt engagemang efter bakgrund
+politisktengagemang_bakgrund <- read_excel("data/politisktengagemang_bakgrund.xlsx", 
+    col_types = c("text", "text", "text", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric"))
+
+
 
 # Tema
 ss_theme <- theme(plot.background = element_rect(fill = "#EB6864") ,
@@ -1224,3 +1253,90 @@ ggplotly(p_förtroendevalda_kön_bakgrund_år, tooltip = "text") %>%
     font = list(color = "#b30000", size = 16 , family = "Arial Black")
   )
 ```
+
+
+
+
+
+
+
+
+
+
+# Politiskt engagemang efter kön {data-navmenu="Politiskt engagemang"}
+## {.tabset .tabset-pills}
+### Politiskt engagemang efter kön
+```{r}
+df <- politisktengagemang_ålder_kön %>% 
+  pivot_longer(!c(Indikator, Ålder, Kön) , names_to = "År" , values_to = "Andel") %>% 
+  filter(Ålder == "Totalt" , 
+         Kön != "Totalt" , 
+         År == "2023-2023") %>% 
+  mutate(År = ifelse(År == "2023-2023" , "2023" , År))
+
+df %>% 
+  ggplot(aes(x = Indikator , y = Andel/100 , fill = Kön,
+             text = paste(Indikator, "\nKön: " , Kön , "\nAndel: " , Andel , "%"))) +
+  geom_col(position = "dodge") +  
+  ss_theme +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1 , vjust = 1)) +
+  scale_y_continuous(limits = c(0 , 0.5), 
+                     breaks = seq(0, 0.5, 0.1), 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") +
+  scale_fill_manual(values = c("Kvinnor" = "#ffb1b1",
+                               "Män" = "#64b6ee"))    -> p_politisktengagemang_kön
+
+ggplotly(p_politisktengagemang_kön, tooltip = "text") %>%
+  config(displayModeBar = F)
+```
+
+
+# Politiskt engagemang efter ålder {data-navmenu="Politiskt engagemang"}
+## {.tabset .tabset-pills}
+### Politiskt engagemang efter ålder
+```{r}
+df <- politisktengagemang_ålder_kön %>% 
+  pivot_longer(!c(Indikator, Ålder, Kön) , names_to = "År" , values_to = "Andel") %>% 
+  filter(Ålder != "Totalt" , 
+         Kön == "Totalt" ,
+         År == "2023-2023") %>% 
+  mutate(År = ifelse(År == "2023-2023" , "2023" , År))
+
+df %>% 
+  ggplot(aes(x = Indikator , y = Andel/100 , fill = Ålder,
+             text = paste(Indikator, "\nÅlderskategori: " , Ålder, "\nAndel: " , Andel , "%"))) +
+  geom_col(position = "dodge") +  
+  ss_theme +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1 , vjust = 1)) +
+  scale_y_continuous(limits = c(0 , 0.5), 
+                     breaks = seq(0, 0.5, 0.1), 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") +
+  scale_fill_manual(values = c("16-29 år" = "#ffb1b1",
+                               "30-49 år" = "#64b6ee" ,
+                               "50-64 år" = "#94c58c",
+                               "65+ år" = "#ffff9a"))    -> p_politisktengagemang_ålder
+
+ggplotly(p_politisktengagemang_ålder, tooltip = "text") %>%
+  config(displayModeBar = F)
+```
+
+
+# Politiskt engagemang efter utbildning {data-navmenu="Politiskt engagemang"}
+## {.tabset .tabset-pills}
+### Politiskt engagemang efter utbildning
+
+
+# Politiskt engagemang efter inkomst {data-navmenu="Politiskt engagemang"}
+## {.tabset .tabset-pills}
+### Politiskt engagemang efter inkomst
+
+
+# Politiskt engagemang efter bakgrund {data-navmenu="Politiskt engagemang"}
+## {.tabset .tabset-pills}
+### Politiskt engagemang efter bakgrund
+
+
+
+

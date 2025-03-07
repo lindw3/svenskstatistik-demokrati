@@ -1323,14 +1323,20 @@ ggplotly(p_politisktengagemang_ålder, tooltip = "text") %>%
 ```
 
 
+
+
 # Politiskt engagemang efter utbildning {data-navmenu="Politiskt engagemang"}
 ## {.tabset .tabset-pills}
 ### Politiskt engagemang efter utbildning
 
 
+
+
 # Politiskt engagemang efter inkomst {data-navmenu="Politiskt engagemang"}
 ## {.tabset .tabset-pills}
 ### Politiskt engagemang efter inkomst
+
+
 
 
 # Politiskt engagemang efter bakgrund {data-navmenu="Politiskt engagemang"}

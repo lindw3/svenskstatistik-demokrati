@@ -245,7 +245,8 @@ I denna rapport bemöts området **Demokrati** utifrån dessa områden:
 <br><br>
 - **Val**: Valdeltagande och valresultat över tid. <br>
 - **Partisympatier**: Partisympatier utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund. <br>
-- **Förtroendevalda**: Förtroendevalda utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund.
+- **Förtroendevalda**: Förtroendevalda utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund. <br>
+- **Politiskt engagemang**: Politiskt engagemang utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund.
 <br> <br>
 Använd navigationspanelen högst upp för att se svaren utifrån olika områden. *Får figurerna inte plats på sidan? Testa att zooma ut genom att hålla in `Ctrl` + `-`.*
 
@@ -260,7 +261,7 @@ Använd navigationspanelen högst upp för att se svaren utifrån olika områden
     <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/arbete.png" width="30%">
   </a>
   <a href="https://lindw3.github.io/svenskstatistik-demokrati/" target="_blank">
-    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/utbildning.png" width="30%">
+    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/livsstil.png" width="30%">
   </a>
 </div>
 
@@ -1267,6 +1268,9 @@ ggplotly(p_förtroendevalda_kön_bakgrund_år, tooltip = "text") %>%
 ## {.tabset .tabset-pills}
 ### Politiskt engagemang efter kön
 ```{r}
+levels_politik <- c("Medlem i parti", "Aktiv i parti" , "Deltagande på politiskt möte under året" , 
+                    "Inga politiska diskussioner" , "Ofta i politiska diskussioner")
+
 df <- politisktengagemang_ålder_kön %>% 
   pivot_longer(!c(Indikator, Ålder, Kön) , names_to = "År" , values_to = "Andel") %>% 
   filter(Ålder == "Totalt" , 
@@ -1275,7 +1279,7 @@ df <- politisktengagemang_ålder_kön %>%
   mutate(År = ifelse(År == "2023-2023" , "2023" , År))
 
 df %>% 
-  ggplot(aes(x = Indikator , y = Andel/100 , fill = Kön,
+  ggplot(aes(x = factor(Indikator , levels = levels_politik) , y = Andel/100 , fill = Kön,
              text = paste(Indikator, "\nKön: " , Kön , "\nAndel: " , Andel , "%"))) +
   geom_col(position = "dodge") +  
   ss_theme +
@@ -1283,7 +1287,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 0.5), 
                      breaks = seq(0, 0.5, 0.1), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") +
+  ylab("Andel, %") + xlab("Indikator") +
   scale_fill_manual(values = c("Kvinnor" = "#ffb1b1",
                                "Män" = "#64b6ee"))    -> p_politisktengagemang_kön
 
@@ -1304,7 +1308,7 @@ df <- politisktengagemang_ålder_kön %>%
   mutate(År = ifelse(År == "2023-2023" , "2023" , År))
 
 df %>% 
-  ggplot(aes(x = Indikator , y = Andel/100 , fill = Ålder,
+  ggplot(aes(x = factor(Indikator , levels = levels_politik) , y = Andel/100 , fill = Ålder,
              text = paste(Indikator, "\nÅlderskategori: " , Ålder, "\nAndel: " , Andel , "%"))) +
   geom_col(position = "dodge") +  
   ss_theme +
@@ -1312,7 +1316,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 0.5), 
                      breaks = seq(0, 0.5, 0.1), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") +
+  ylab("Andel, %") + xlab("Indikator") +
   scale_fill_manual(values = c("16-29 år" = "#ffb1b1",
                                "30-49 år" = "#64b6ee" ,
                                "50-64 år" = "#94c58c",
@@ -1328,21 +1332,100 @@ ggplotly(p_politisktengagemang_ålder, tooltip = "text") %>%
 # Politiskt engagemang efter utbildning {data-navmenu="Politiskt engagemang"}
 ## {.tabset .tabset-pills}
 ### Politiskt engagemang efter utbildning
+```{r}
+df <- politisktengagemang_utbildning %>% 
+  pivot_longer(!c(Indikator, Utbildning, Kön) , names_to = "År" , values_to = "Andel") %>% 
+  filter(Utbildning != "Samtliga" , 
+         Kön == "Totalt" ,
+         År == "2023-2023") %>% 
+  mutate(År = ifelse(År == "2023-2023" , "2023" , År))
 
+levels = c("Förgymnasial utbildning" , "Gymnasial utbildning" , 
+           "Eftergymnasial utbildning, kortare än 3 år" , 
+           "Eftergymnasial utbildning, 3 år eller längre")
+
+df %>% 
+  ggplot(aes(x = factor(Indikator , levels = levels_politik) , 
+             y = Andel/100 , fill = factor(Utbildning, levels = levels) ,
+             text = paste(Indikator, "\nUtbildningsnivå: " , Utbildning, "\nAndel: " , Andel , "%"))) +
+  geom_col(position = "dodge") +  
+  ss_theme +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1 , vjust = 1)) +
+  scale_y_continuous(limits = c(0 , 0.5), 
+                     breaks = seq(0, 0.5, 0.1), 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") + xlab("Indikator") +
+  labs(fill = "Utbildningsnivå") +
+  scale_fill_manual(values = c("Förgymnasial utbildning" = "#ffb1b1",
+                               "Gymnasial utbildning" = "#64b6ee" ,
+                               "Eftergymnasial utbildning, kortare än 3 år" = "#94c58c",
+                               "Eftergymnasial utbildning, 3 år eller längre" = "#ffff9a"))    -> p_politisktengagemang_utbildning
+
+ggplotly(p_politisktengagemang_utbildning, tooltip = "text") %>%
+  config(displayModeBar = F)
+```
 
 
 
 # Politiskt engagemang efter inkomst {data-navmenu="Politiskt engagemang"}
 ## {.tabset .tabset-pills}
 ### Politiskt engagemang efter inkomst
+```{r}
+df <- politisktengagemang_inkomst %>% 
+  pivot_longer(!c(Indikator, Inkomst, Kön) , names_to = "År" , values_to = "Andel") %>% 
+  filter(Kön == "Totalt" ,
+         År == "2023-2023") %>% 
+  mutate(År = ifelse(År == "2023-2023" , "2023" , År))
 
+df %>% 
+  ggplot(aes(x = factor(Indikator , levels = levels_politik) , y = Andel/100 , fill = Inkomst,
+             text = paste(Indikator, "\nInkomst: " , Inkomst, "\nAndel: " , Andel , "%"))) +
+  geom_col(position = "dodge") +  
+  ss_theme +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1 , vjust = 1)) +
+  scale_y_continuous(limits = c(0 , 0.5), 
+                     breaks = seq(0, 0.5, 0.1), 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") + xlab("Indikator") +
+  scale_fill_manual(values = c("1 kvintilen" = "#ffb1b1",
+                               "2 kvintilen" = "#64b6ee" ,
+                               "3 kvintilen" = "#94c58c",
+                               "4 kvintilen" = "#ffff9a" ,
+                               "5 kvintilen" = "#ffcff1"))    -> p_politisktengagemang_inkomst
+
+ggplotly(p_politisktengagemang_inkomst, tooltip = "text") %>%
+  config(displayModeBar = F)
+```
 
 
 
 # Politiskt engagemang efter bakgrund {data-navmenu="Politiskt engagemang"}
 ## {.tabset .tabset-pills}
 ### Politiskt engagemang efter bakgrund
+```{r}
+df <- politisktengagemang_bakgrund %>% 
+  pivot_longer(!c(Indikator, Bakgrund, Kön) , names_to = "År" , values_to = "Andel") %>% 
+  filter(Bakgrund != "Totalt" ,
+         Kön == "Totalt" ,
+         År == "2023-2023") %>% 
+  mutate(År = ifelse(År == "2023-2023" , "2023" , År))
 
+df %>% 
+  ggplot(aes(x = factor(Indikator , levels = levels_politik) , y = Andel/100 , fill = Bakgrund,
+             text = paste(Indikator, "\nBakgrund: " , Bakgrund, "\nAndel: " , Andel , "%"))) +
+  geom_col(position = "dodge") +  
+  ss_theme +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1 , vjust = 1)) +
+  scale_y_continuous(limits = c(0 , 0.5), 
+                     breaks = seq(0, 0.5, 0.1), 
+                     labels = scales::percent_format(accuracy = 1)) +
+  ylab("Andel, %") + xlab("Indikator") +
+  scale_fill_manual(values = c("Utländsk bakgrund" = "#ffb1b1",
+                               "Svensk bakgrund" = "#64b6ee"))    -> p_politisktengagemang_bakgrund
+
+ggplotly(p_politisktengagemang_bakgrund, tooltip = "text") %>%
+  config(displayModeBar = F)
+```
 
 
 

@@ -42,7 +42,7 @@ library(readxl)
 library(waffle)
 
 # Karta
-data <- st_read("C:\\Users\\WILIDF17\\OneDrive - Sveriges Riksidrottsförbund\\Dokument\\GitHub\\svenskstatistik-demokrati\\data\\RegSO_2018_v2.gpkg" , layer = "RegSO_2018_v2")
+data <- st_read("C:\\Users\\WILIDF17\\OneDrive - Sveriges Riksidrottsförbund\\Dokument\\GitHub\\Svensk statistik\\svenskstatistik-demokrati\\data\\RegSO_2018_v2.gpkg" , layer = "RegSO_2018_v2")
 kommuner_karta <- data %>%
   select(regso, kommunnamn, geom)
 colnames(kommuner_karta) <- c("RegSO" , "Kommun" , "geom")
@@ -252,18 +252,18 @@ Använd navigationspanelen högst upp för att se svaren utifrån olika områden
 
 
 ##  {.tabset .tabset-pills}
-### Rapporter
-<div style="display: flex; justify-content: space-between; gap: 10px;">
-  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" target="_blank">
-    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/demokrati.png" width="30%">
-  </a>
-  <a href="https://lindw3.github.io/svenskstatistik-arbete/" target="_blank">
-    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/arbete.png" width="30%">
-  </a>
-  <a href="https://lindw3.github.io/svenskstatistik-demokrati/" target="_blank">
-    <img src="C:/Users/WILIDF17/OneDrive - Sveriges Riksidrottsförbund/Dokument/GitHub/svenskstatistik/bilder/livsstil.png" width="30%">
-  </a>
-</div>
+### Källor
+1: Klicka här
+<br>
+2: Klicka här
+<br>
+3: Klicka här
+<br>
+4: Klicka här
+<br>
+5: Klicka här
+<br>
+
 
 
 
@@ -283,7 +283,7 @@ df %>%
   geom_line(linewidth = 1) +
   scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 100, 25), limits = c(0, 100)) +
   scale_x_discrete(breaks = c("1973" , "2022")) +
-  ss_theme +
+  ss_theme + xlab(NULL) +
   scale_color_manual(values = c("Riksdag" = "#006AB3",
                                 "Region" = "#DA291C",
                                 "Kommun" =  "#009933"))   -> p_valdeltagande
@@ -306,7 +306,7 @@ df %>%
   geom_line(linewidth = 1) +
   scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 50, 5), limits = c(0, 50)) +
   scale_x_discrete(breaks = c("1973" , "2022")) +
-  ss_theme +
+  ss_theme + xlab(NULL) +
   partifärger_colour -> p_valresultat_sverige
 
 ggplotly(p_valresultat_sverige, tooltip = "text") %>%
@@ -326,7 +326,7 @@ df %>%
   geom_line(linewidth = 1) +
   scale_y_continuous(labels = percent_format(scale = 1), breaks = seq(0, 30, 5), limits = c(0, 30)) +
   scale_x_discrete(breaks = c("1995" , "2024")) +
-  ss_theme +
+  ss_theme + xlab(NULL) +
   partifärger_colour -> p_valresultat_eu
 
 ggplotly(p_valresultat_eu, tooltip = "text") %>%
@@ -340,7 +340,7 @@ ggplotly(p_valresultat_eu, tooltip = "text") %>%
 kommuner_karta %>% 
 ggplot(aes(text = paste(Kommun , "\nPolitisk färg: " , Färg , "\nAndel: " , Andel))) +
   geom_sf(aes(fill = Färg)) +
-  ss_theme +
+  ss_theme + xlab(NULL) +
   scale_fill_manual(values = c("Blå" = "#006AB3" ,
                                "Röd" = "#DA291C") , labels = c("Höger" , "Vänster")) +
   labs(fill = "Partisympati efter block") +
@@ -380,7 +380,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = Kön,
              text = paste(Parti, "\nKön: ", Kön, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   ss_theme +
   scale_fill_manual(values = c("Kvinnor" = "#ffb1b1",
                                "Män" = "#64b6ee")) -> p_partisympatier_kön
@@ -443,7 +443,7 @@ df_combined %>%
                                 "Män, 50-64" = "#427bd2",
                                 "Män, 65+" = "#2c43b0" ,
                                 "Män, Totalt" = "#1e2791")) +
-  labs(color = "Kategori") +
+  labs(color = "Kategori") + xlab(NULL) +
   ss_theme -> p_blocksympati_kön_ålder
 
 ggplotly(p_blocksympati_kön_ålder, tooltip = "text") %>%
@@ -487,7 +487,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = factor(Ålder , level = levels),
              text = paste(Parti, "\nÅlderskategori: ", Ålder, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Ålderskategori") +
   ss_theme +
   scale_fill_manual(values = c("18-29" = "#ffb1b1",
@@ -539,7 +539,7 @@ df_combined %>%
                     "2015" , "2016" ,"2017" , "2018")) %>% 
   ggplot(aes(x = År , y = Blocktillhörighet , group = Ålder , color = Ålder,
              text = paste(År, "\nKategori: " , Ålder, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
-  geom_line(linewidth = 1) +  
+  geom_line(linewidth = 1) +  xlab(NULL) +
   scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
@@ -588,7 +588,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = factor(Utbildning , level = levels),
              text = paste(Parti, "\nUtbildning: ", Utbildning, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Utbildningsnivå") +
   ss_theme +
   scale_fill_manual(values = c("Förgymnasial" = "#ffb1b1",
@@ -637,6 +637,7 @@ df_combined %>%
   ggplot(aes(x = År , y = Blocktillhörighet , group = Utbildning , color = Utbildning,
              text = paste(År, "\nUtbildning: " , Utbildning, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line(linewidth = 1) +  
+  xlab(NULL) +
   scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
@@ -688,9 +689,9 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = factor(Inkomst , level = levels),
              text = paste(Parti, "\nInkomst: ", Inkomst, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Inkomstpercentil") +
-  ss_theme +
+  ss_theme + 
   scale_fill_manual(values = c("0-20 %" = "#ffb1b1",
                                "21-40 %" = "#64b6ee" ,
                                "41-60 %" = "#94c58c",
@@ -743,6 +744,7 @@ df_combined %>%
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
   scale_x_discrete(breaks = c("2019" , "2024")) +
+  xlab(NULL) +
   scale_color_manual(values = c("0-20 %" = "#ffb1b1",
                                "21-40 %" = "#64b6ee" ,
                                "41-60 %" = "#94c58c",
@@ -791,7 +793,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = Bakgrund,
              text = paste(Parti, "\nBakgrund: ", Bakgrund, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Bakgrund") +
   ss_theme +
   scale_fill_manual(values = c("Utländsk" = "#ffb1b1",
@@ -838,6 +840,7 @@ df_combined %>%
   ggplot(aes(x = År , y = Blocktillhörighet , group = Bakgrund , color = Bakgrund,
              text = paste(År, "\nBakgrund: " , Bakgrund, "\nAndel höger: " , Blocktillhörighet * 100, "%"))) +
   geom_line(linewidth = 1) +  
+  xlab(NULL) +
   scale_y_continuous(limits = c(0, 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
@@ -898,7 +901,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = Kön,
              text = paste(Parti, "\nKön: ", Kön, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Kön") +
   ss_theme +
   scale_fill_manual(values = c("Kvinnor" = "#ffb1b1",
@@ -926,7 +929,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 1), 
                      breaks = c(0.5), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") +
+  ylab("Andel, %") + xlab(NULL) +
   partifärger_colour +
   ss_theme -> p_förtroendevalda_kön_år
 
@@ -970,7 +973,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = factor(Kategori, levels = levels),
              text = paste(Parti, "\nÅlder: ", Kategori, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Ålder") +
   ss_theme +
   scale_fill_manual(values = c("18-29 år" = "#ffb1b1",
@@ -1002,7 +1005,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_colour_manual(values = c("18-29 år" = "#ffb1b1",
                                "30-49 år" = "#64b6ee" ,
                                "50-64 år" = "#94c58c",
@@ -1048,7 +1051,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = factor(Utbildning, levels = levels),
              text = paste(Parti, "\nUtbildningsnivå: ", Utbildning, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Utbildning") +
   ss_theme +
   scale_fill_manual(values = c("Förgymnasial" = "#ffb1b1",
@@ -1077,7 +1080,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_colour_manual(values = c("Förgymnasial" = "#ffb1b1",
                                "Gymnasial" = "#64b6ee" ,
                                "Eftergymnasial" = "#94c58c")) +
@@ -1124,7 +1127,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = factor(Inkomstpercentil, levels = levels),
              text = paste(Parti, "\nInkomstpercentil: ", Inkomstpercentil, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Inkomstpercentil") +
   ss_theme +
   scale_fill_manual(values = c("0-20" = "#ffb1b1",
@@ -1155,7 +1158,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_colour_manual(values = c("0-20" = "#ffb1b1",
                                "21-40" = "#64b6ee" ,
                                "41-60" = "#94c58c",
@@ -1203,7 +1206,7 @@ df %>%
   ggplot(aes(y = Parti, x = Andel, fill = factor(Bakgrund, levels = levels),
              text = paste(Parti, "\nBakgrund: ", Bakgrund, "\nAndel: ", Andel, "%"))) +
   geom_col(position = "dodge") +
-  xlab("Andel, %") +
+  xlab("Andel, %") + ylab(NULL) +
   labs(fill = "Bakgrund") +
   ss_theme +
   scale_x_continuous(breaks = c(0 , 100) , limits = c(0 , 100)) +
@@ -1231,7 +1234,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 1), 
                      breaks = 0.5, 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_colour_manual(values = c("Inrikes" = "#ffb1b1",
                                "Utrikes" = "#64b6ee")) +
   ss_theme -> p_förtroendevalda_kön_bakgrund_år
@@ -1287,7 +1290,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 0.5), 
                      breaks = seq(0, 0.5, 0.1), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") + xlab("Indikator") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_fill_manual(values = c("Kvinnor" = "#ffb1b1",
                                "Män" = "#64b6ee"))    -> p_politisktengagemang_kön
 
@@ -1316,7 +1319,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 0.5), 
                      breaks = seq(0, 0.5, 0.1), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") + xlab("Indikator") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_fill_manual(values = c("16-29 år" = "#ffb1b1",
                                "30-49 år" = "#64b6ee" ,
                                "50-64 år" = "#94c58c",
@@ -1354,7 +1357,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 0.5), 
                      breaks = seq(0, 0.5, 0.1), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") + xlab("Indikator") +
+  ylab("Andel, %") + xlab(NULL) +
   labs(fill = "Utbildningsnivå") +
   scale_fill_manual(values = c("Förgymnasial utbildning" = "#ffb1b1",
                                "Gymnasial utbildning" = "#64b6ee" ,
@@ -1386,7 +1389,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 0.5), 
                      breaks = seq(0, 0.5, 0.1), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") + xlab("Indikator") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_fill_manual(values = c("1 kvintilen" = "#ffb1b1",
                                "2 kvintilen" = "#64b6ee" ,
                                "3 kvintilen" = "#94c58c",
@@ -1419,7 +1422,7 @@ df %>%
   scale_y_continuous(limits = c(0 , 0.5), 
                      breaks = seq(0, 0.5, 0.1), 
                      labels = scales::percent_format(accuracy = 1)) +
-  ylab("Andel, %") + xlab("Indikator") +
+  ylab("Andel, %") + xlab(NULL) +
   scale_fill_manual(values = c("Utländsk bakgrund" = "#ffb1b1",
                                "Svensk bakgrund" = "#64b6ee"))    -> p_politisktengagemang_bakgrund
 

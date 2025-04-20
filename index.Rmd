@@ -240,7 +240,7 @@ partifärger_fill <- scale_fill_manual(values = c("Centerpartiet" = "#009933" ,
 
 ## {data-height=375 .tabset .tabset-pills}
 ### Om rapporten
-I denna rapport bemöts området **Demokrati** utifrån dessa områden:
+I denna rapport bemöts temat **Demokrati** utifrån dessa områden:
 <br><br>
 - **Val**: Valdeltagande och valresultat över tid. <br>
 - **Partisympatier**: Partisympatier utifrån kön, ålder, utbildningsnivå, inkomst och bakgrund. <br>
